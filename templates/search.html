@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wyszukiwarka Tytułów</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="search-container">
+        <h2>Wyszukiwarka Tytułów</h2>
+        <input type="text" id="searchInput" placeholder="Wyszukaj tytuł...">
+        <ul id="searchResults">
+            {% for book in books %}
+                <li>{{ book.title }} - {{ book.author }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+</body>
+</html>
