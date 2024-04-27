@@ -1,17 +1,18 @@
 from flask import Flask, render_template, request, redirect, url_for
+from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///books.db'  # Ścieżka do bazy SQLite
+db = SQLAlchemy(app)
+
+# Definicja modelu Książki
+class Book(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(100), nullable=False)
+    author = db.Column(db.String(100), nullable=False)
 
 # Dane do logowania - symulacja
 users = {'admin': 'admin123', 'user': 'user123'}
-
-# Dane książek - symulacja
-books = [
-    {'title': 'W pustyni i w puszczy', 'author': 'Henryk Sienkiewicz'},
-    {'title': 'Pan Tadeusz', 'author': 'Adam Mickiewicz'},
-    {'title': 'Harry Potter i Kamień Filozoficzny', 'author': 'J.K. Rowling'},
-    # Dodaj więcej książek według potrzeb
-]
 
 @app.route('/')
 def index():
@@ -28,7 +29,13 @@ def login():
 
 @app.route('/search')
 def search():
+    books = Book.query.all()  # Pobieranie wszystkich książek z bazy danych
     return render_template('search.html', books=books)
 
+
+    # Tworzenie tabeli książek w bazie danych, jeśli nie istnieje
 if __name__ == '__main__':
+    with app.app_context():
+        db.create_all()
     app.run(debug=True)
+
