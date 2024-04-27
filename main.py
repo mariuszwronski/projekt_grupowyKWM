@@ -10,6 +10,8 @@ class Book(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(100), nullable=False)
     author = db.Column(db.String(100), nullable=False)
+    release_date = db.Column(db.String(20), nullable=True)  # Dodanie kolumny release_date
+
 
 # Dane do logowania - symulacja
 users = {'admin': 'admin123', 'user': 'user123'}
@@ -32,10 +34,20 @@ def search():
     books = Book.query.all()  # Pobieranie wszystkich książek z bazy danych
     return render_template('search.html', books=books)
 
+@app.route('/add_book', methods=['POST'])
+def add_book():
+    title = request.form['title']
+    author = request.form['author']
+    release_date = request.form['release_date']
 
-    # Tworzenie tabeli książek w bazie danych, jeśli nie istnieje
+    # Tworzenie nowej książki i dodawanie jej do bazy danych
+    new_book = Book(title=title, author=author, release_date=release_date)
+    db.session.add(new_book)
+    db.session.commit()
+
+    return redirect(url_for('search'))
+
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
     app.run(debug=True)
-
