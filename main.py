@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, flash
+from flask import Flask, render_template, request, redirect, url_for, flash, session
 from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
@@ -26,10 +26,17 @@ def login():
     username = request.form['username']
     password = request.form['password']
     if username in users and users[username] == password:
+        session['logged_in'] = True
+        session['username'] = username
         return redirect(url_for('search'))
     else:
         flash('Błędna nazwa użytkownika lub hasło', 'error')
         return redirect(url_for('index'))
+
+@app.route('/logout')
+def logout():
+    session.clear()
+    return redirect(url_for('index'))
 
 @app.route('/search')
 def search():
@@ -38,6 +45,10 @@ def search():
 
 @app.route('/add_book', methods=['POST'])
 def add_book():
+    if 'logged_in' not in session:
+        flash('Musisz być zalogowany, aby dodać książkę', 'error')
+        return redirect(url_for('index'))
+
     title = request.form['title']
     author = request.form['author']
     release_date = request.form['release_date']
