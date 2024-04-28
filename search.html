@@ -12,7 +12,16 @@
         <input type="text" id="searchInput" placeholder="Wyszukaj tytuł...">
         <ul id="searchResults">
             {% for book in books %}
-                <li>{{ book.title }} - {{ book.author }}</li>
+                <li>{{ book.title }} - {{ book.author }}
+                    {% if book.borrowed %}
+                        <span class="borrowed">Wypożyczona przez: {{ book.borrowed_by }}</span>
+                    {% else %}
+                        <form action="{{ url_for('borrow_book', book_id=book.id) }}" method="post">
+                            <input type="text" name="borrower" placeholder="Nazwa użytkownika" required>
+                            <button type="submit">Wypożycz</button>
+                        </form>
+                    {% endif %}
+                </li>
             {% endfor %}
         </ul>
         <h2>Dodaj nową książkę</h2>
@@ -30,14 +39,6 @@
                 <input type="text" id="release_date" name="release_date">
             </div>
             <button type="submit">Dodaj książkę</button>
-            {% if not book.borrowed %}
-                        <form action="/borrow_book/{{ book.id }}" method="post">
-                            <input type="text" name="borrower" placeholder="Nazwa użytkownika" required>
-                            <button type="submit">Wypożycz</button>
-                        </form>
-                    {% else %}
-                        <span class="borrowed">Wypożyczona</span>
-                    {% endif %}
         </form>
     </div>
 </body>
